@@ -7,7 +7,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import re
 import string
-import os
 from operator import itemgetter
 from dateutil import parser
 
@@ -16,7 +15,7 @@ FREQUENCY_USERS_DICT = {}
 FREQUENCY_DATES_DICT = {}
 
 def writeFile(filename,dataList):
-    fd = open(filename,'w')
+    fd = open(filename, 'w')
     for item in dataList:
         line = "%s\n"%(item)
         fd.write(line)#.encode('utf-8'))
@@ -55,16 +54,16 @@ def viewFrequencyWords(filename):
     
     top = int(len(listTuples)*0.25)
     print ("{} words found, getting the first {}".format(size, top))
-    
+
     dataList = []
     dataList.append("index,word,frequency,likelihood")
     i = 0 
     words, values = zip(*listTuples[:top])
     dataList += [ "{},{},{},{}".format(idx, word, value, 1.0*value/size) for idx, (word,value) in enumerate(listTuples[:top])]
-    
-    writeFile("wordsTweets.txt",words)
-    writeFile(filename,dataList)
-	
+
+    writeFile("wordsTweets.txt", words)
+    writeFile(filename, dataList)
+
     index = np.arange(len(words))
     drawBarChart(index,words,values,'Words', "words_freqs.png")
 
@@ -141,20 +140,20 @@ def process_date(str_date):
     return date.strftime("%d-%m-%Y")
 
 
-def main(filename, output_f):
-    output_file = open(output_f, "w")
+def main(filename):
+    #output_file = open(output_f, "w")
     with open(filename) as tweet_file:
         for line in tweet_file:
             tweet = json.loads(line)
-            tweet["text"] = processText(tweet.get("text"))
-            tweet["date"] = process_date(tweet.get("date"))
+            #tweet["text"] = processText(tweet.get("text"))
+            #tweet["date"] = process_date(tweet.get("date"))
             update_word_freqs(tweet["text"])
             update_freqs(tweet["user_id"], FREQUENCY_USERS_DICT)
             update_freqs(tweet["date"], FREQUENCY_DATES_DICT)
-            output_file.write("{}\n".format(json.dumps(tweet)))
+            #output_file.write("{}\n".format(json.dumps(tweet)))
 
-    viewFrequencyWords("frequency_results")
+    viewFrequencyWords("word_frequency_results")
     viewFrequency("user_freq_results.csv", "user_ids", FREQUENCY_USERS_DICT)
     viewFrequency("dates_freq_results.csv", "dates", FREQUENCY_DATES_DICT)
-    
-main(sys.argv[1], sys.argv[2])
+
+main(sys.argv[1])
